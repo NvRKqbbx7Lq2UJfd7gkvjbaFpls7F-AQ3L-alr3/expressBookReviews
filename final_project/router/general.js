@@ -11,7 +11,7 @@ public_users.post("/register", (req,res) => {
 	const password = req.body.password;
 
 	if (username && password) {
-		if (!doesExist(username)) {
+		if (!isValid(username)) {
 			users.push({ "username": username, "password": password });
 			return res.status(200).json({ message: `User ${username} successfully registered. Now you can login` });
 		} else {
@@ -27,14 +27,6 @@ public_users.get('/register',function (req, res) {
 	console.log(`looking for user: ${registeredUsers}`);
 	return res.json(users);
 });
-
-// Function to check if the user exists
-doesExist = (username) => {
-	let userswithsamename = users.filter((user) => {
-		return user.username === username;
-	});
-	return userswithsamename.length > 0;
-};
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
