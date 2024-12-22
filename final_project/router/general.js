@@ -6,14 +6,39 @@ const public_users = express.Router();
 
 
 public_users.post("/register", (req,res) => {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+	// curl -X POST "localhost:5000/register" -d '{"username": "test", "password": "test123"}' -H 'Content-Type: application/json'
+	const username = req.body.username;
+	const password = req.body.password;
+
+	if (username && password) {
+		if (!doesExist(username)) {
+			users.push({ "username": username, "password": password });
+			return res.status(200).json({ message: `User ${username} successfully registered. Now you can login` });
+		} else {
+			return res.status(404).json({ message: `User ${username} already exists!` });
+		}
+	}
+	return res.status(404).json({ message: `Unable to register user ${username}.` });
 });
+
+// show registered users
+public_users.get('/register',function (req, res) {
+	const registeredUsers = req.params.isbn;
+	console.log(`looking for user: ${registeredUsers}`);
+	return res.json(users);
+});
+
+// Function to check if the user exists
+doesExist = (username) => {
+	let userswithsamename = users.filter((user) => {
+		return user.username === username;
+	});
+	return userswithsamename.length > 0;
+};
 
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
-  //Write your code here
-  return res.json(books);
+	return res.json(books);
 });
 
 // Get book details based on ISBN
@@ -24,19 +49,18 @@ public_users.get('/isbn/:isbn',function (req, res) {
 });
 
 // Get book details based on author
+// localhost:5000/author/Chinua%20Achebe
 public_users.get('/author/:author',function (req, res) {
 	const author = req.params.author;
 	console.log(`looking for author: ${author}`);
-  const booksByAuthor = Object.values(books).filter(book =>
+	const booksByAuthor = Object.values(books).filter(book =>
 		book.author.toLowerCase() === author.toLowerCase()
 	);
-
 	return res.json(booksByAuthor);
 });
 
 // Get all books based on title
 public_users.get('/title/:title',function (req, res) {
-	//Write your code here
 	const title = req.params.title;
 	console.log(`looking for title: ${title}`);
 	return res.json(
@@ -47,12 +71,12 @@ public_users.get('/title/:title',function (req, res) {
 
 });
 
-//  Get book review
+// Get reviews for the book
 public_users.get('/review/:isbn',function (req, res) {
-	//Write your code here
 	const isbn = req.params.isbn;
-	console.log(`looking for review of isbn: ${isbn}`);
-	return res.json(books[isbn].review);
+	const reviews = books[isbn].reviews;
+	console.log(`looking for reviews for book with isbn: ${isbn}`);
+	return res.json(Object.values(reviews));
 });
 
 module.exports.general = public_users;
