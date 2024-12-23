@@ -46,7 +46,6 @@ regd_users.post("/login", (req,res) => {
 
 // Add a book review
 regd_users.put("/auth/review/:isbn", (req, res) => {
-	//Write your code here
     const username = req.session.authorization.username; // stored in session
     const isbn = req.params.isbn; // given by url
     //const review = req.body.review; // sent as a normal request
@@ -55,7 +54,15 @@ regd_users.put("/auth/review/:isbn", (req, res) => {
     const numReviews = Object.keys(reviews).length+1;
     reviews[username] = { "review": review };
 	//console.log(`adding review for book with isbn: ${isbn}`);
-	return res.status(200).json({message: `${username} added review to ${books[isbn]["title"]}: ${review} `});
+	return res.status(200).json({message: `user: ${username} added review of ${books[isbn]["title"]}: ${review} `});
+});
+
+regd_users.delete("/auth/review/:isbn", (req, res) => {
+    const username = req.session.authorization.username; // stored in session
+    const isbn = req.params.isbn; // given by url
+    const reviews = books[isbn]["reviews"];
+    reviews[username] = {};
+    return res.status(200).json({message: `user: ${username} deleted review of ${books[isbn]["title"]}`});
 });
 
 module.exports.authenticated = regd_users;
